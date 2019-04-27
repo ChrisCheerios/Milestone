@@ -1,0 +1,272 @@
+{% extends "goals/layout.html" %}
+
+{% load humanize %}
+
+{% block title %} {{ goal }} {% endblock %}
+
+{% block body %}
+
+<div class="container-flex">
+    <div class = row>
+        <div class="col-sm-5">
+            <div class="jumbotron">
+                <h1 class="display-4">{{ goal|lower|title }}</h1>
+                <h5>Progress:</h5>
+
+                <ul>
+
+                    {% for log in progress|slice:":5" %}
+
+                        <li>
+                            {{ log.timestamp|date:"F d, Y" }}: {{ log.quantity|intcomma}} {{ log.goal.units }}
+                            <button class="edit">Edit</button>
+                        </li>
+                        <li class = "hidden">
+                            <form class="progress_edit">
+                                {% csrf_token %}
+                                <div class="form-row progress-block" >
+                                    <div class="form-group col">
+                                        <label for="progress-quantity">Edit Progress</label>
+                                        <input type="number" id = "quantity-edit" name='quantity-edit' class="form-control" placeholder="{{ log.quantity }}" required>
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="progress-date">Edit Date</label>
+                                        <input onfocus="(this.type='date')" onblur="(this.type='text')" class="form-control date-progress" placeholder="{{ log.timestamp|date:'m/d/Y' }}" name="date-edit" required>
+                                    </div>
+                                </div>
+                                    <div class="form-row">
+                                    <input class="hidden" name = "progress_id" value = "{{ log.id }}">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                    <button type="button" class="btn btn-secondary progress-cancel">Cancel</button>
+                                </div>
+                            </form>
+                        </li>
+
+                    {% empty %}
+
+                        <li>
+                            You haven't logged any progress yet!  Get Your Act together!
+                        </li>
+
+                    {% endfor %}
+
+                    {% if progress|length > 5 %}
+                    <li>
+                        <button type="button" class="btn btn-secondary" id="show_button" onclick=showlist()>View More</button>
+                    </li>
+
+                        <ul class="hide" id="full_list">
+
+                            {% for log in progress|slice:"5:" %}
+
+                            <li>
+                                {{ log.timestamp|date:"F d, Y" }}: {{ log.quantity|intcomma}} {{ log.goal.units }}
+                                <button class="edit">Edit</button>
+                            </li>
+                            <li class = "hidden">
+                                <form class="progress_edit">
+                                    {% csrf_token %}
+                                    <div class="form-row progress-block" >
+                                        <div class="form-group col">
+                                            <label for="progress-quantity">Edit Progress</label>
+                                            <input type="number" id = "quantity-edit" name='quantity-edit' class="form-control" placeholder="{{ log.quantity }}" required>
+                                        </div>
+                                        <div class="form-group col">
+                                            <label for="progress-date">Edit Date</label>
+                                            <input onfocus="(this.type='date')" onblur="(this.type='text')" class="form-control date-progress" placeholder="{{ log.timestamp|date:'m/d/Y' }}" name="date-edit" required>
+                                        </div>
+                                    </div>
+                                        <div class="form-row">
+                                        <input class="hidden" name = "progress_id" value = "{{ log.id }}">
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                        <button type="button" class="btn btn-secondary progress-cancel">Cancel</button>
+                                    </div>
+                                </form>
+                            </li>
+
+                            {% endfor %}
+
+                        </ul>
+
+                    {% endif %}
+
+                </ul>
+
+
+
+            </div>
+        </div>
+        <div class="col-sm-7">
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- The Form for submitting goal progress -->
+<div class="container-flex">
+            <h2>Post Progress:</h2>
+    <form method="post" id="progress">
+
+        {% csrf_token %}
+
+        <div class = hidden>
+            <input type="text" name="goal" value = "{{ goal.id }}">
+        </div>
+
+        <div class="form-row progress-block" >
+            <div class="form-group col">
+                <label for="progress-quantity">How Much Progress Are You logging?</label>
+                <input type="number" id = "progress-quantity-1" name='progress-quantity-1' class="form-control" placeholder="{{ goal.units|title }}" required>
+            </div>
+            <div class="form-group col">
+                <label for="progress-date-1">Date</label>
+                <input type="date" class="form-control date" name="progress-date-1" required>
+            </div>
+        </div>
+
+        <!-- This extra-progress form is hidden by default -->
+        <div class="form-row progress-block hide">
+            <div class="form-group col">
+                <label for="progress-quantity">More Progress</label>
+                <input type="number" id = "progress-quantity-2" name='progress-quantity-2' class="form-control" placeholder="{{ goal.units|title }}" >
+            </div>
+            <div class="form-group col">
+                <label for="progress-date-2">Date</label>
+                <input type="date" class="form-control date" name="progress-date-2">
+            </div>
+        </div>
+
+        <!-- This extra-progress form is hidden by default -->
+        <div class="form-row progress-block hide">
+            <div class="form-group col">
+                <label for="progress-quantity">Even More Progress!</label>
+                <input type="number" id = "progress-quantity-3" name='progress-quantity-3' class="form-control" placeholder="{{ goal.units|title }}" >
+            </div>
+            <div class="form-group col">
+                <label for="progress-date-3">Date</label>
+                <input type="date" class="form-control date" name="progress-date-3">
+            </div>
+        </div>
+
+        <!-- The Form Submit button and the button to reveal the extra-progress sections of the form -->
+        <div class="form-row">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="button" class="btn btn-secondary show" id="show_more">Log More Progress</button>
+        </div>
+
+    </form>
+</div>
+
+
+<script>
+
+    // Declare my chart.  This needs to be global
+    var chart
+
+    // <!-- The endpoint for the API call to update the chart-->
+    var endpoint = '/api/data/{{goal.id}}'
+
+    // <!-- This is the function that updates the chart with most recent data -->
+    function update_chart() {
+        $.ajax({
+            method: "GET",
+            url: endpoint,
+            success: function(data) {
+                dates = data.dates
+                dates.push( "Final Goal")
+                progress = data.progress
+                progress.push({{ goal.total }})
+                cumulative_progress = data.cumulative_progress
+                chart_update()
+            },
+            error: function(error) {
+                console.log("error")
+                console.log(error)
+            }
+        });
+    };
+
+    // <!-- The function that updates the chart itself, with info from the ajax request above -->
+    function chart_update (){
+
+        // <!-- Destroy the Old Chart, if any -->
+        if(chart){
+            chart.destroy();
+        }
+
+        // <!-- Make a new chart -->
+
+        // <!-- Grab the location for the chart -->
+        let ctx = document.getElementById('myChart').getContext('2d');
+
+        // <!-- Make the chart -->
+        chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'bar',
+
+            // The data for our dataset
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: '{{ goal.units|title }}',
+                    backgroundColor: 'rgb(23,82,42)',
+                    borderColor: 'rgb(23,82,42)',
+                    data: progress
+                },
+                {
+                    label: 'Cumulative Progress',
+                    backgroundColor: 'rgb(44,159,81)',
+                    borderColor: 'rgb(44,159,81)',
+                    data: cumulative_progress,
+                    type: 'line'
+                }
+                ]
+            },
+
+            // Configuration options go here
+            options: {
+            }
+        });
+    };
+
+    function showlist() {
+        $("#full_list").show()
+        $("#show_button").hide()
+    };
+
+    var button = document.getElementById('show_more')
+    button.addEventListener('click', show_more)
+
+    function show_more() {
+        $('.progress-block').css( "display", "flex" );
+        this.style.display = 'none'
+    }
+
+    // Updates the Chart when the page loads (it doesn't work when put inside DOMContentLoaded for some reason)
+    update_chart()
+
+
+    // <!-- Configure my progress-edit buttons to call the progress_update() function -->
+    $(".progress_edit").submit(function(e) {
+        <!-- Stop the form submission -->
+        e.preventDefault();
+
+        let data = $(this).serialize()
+
+        jQuery.ajax({
+            method: "POST",
+            url: '/api/data/{{goal.id}}',
+            data: data
+        })
+        .done(function(msg) {
+            console.log(msg)
+            update_chart()
+        });
+
+    });
+
+
+
+</script>
+
+{% endblock %}

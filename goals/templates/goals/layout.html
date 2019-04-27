@@ -1,0 +1,80 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+
+        <!-- Link for favicon TODO get a favicon-->
+        <link rel="shortcut icon" href="{% static 'favicon.ico' %}"/>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <!-- My CSS TODO make a stylesheet!-->
+        <link rel="stylesheet" type="text/css" href="{% static 'goals/style.css' %}" />
+        <!-- JQuery source -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <!-- My Script -->
+        <script src="{% static 'goals/script.js' %}"></script>
+        <!-- Block for each pages script file, if necessary -->
+        <script src="{% static 'goals/goal_view_script.js' %}"></script>
+        <!-- Chart.js script -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+    </head>
+
+    <body>
+
+        <!-- Basic Navbar- taken from bootstrap documentation and modified -->
+        <nav class="navbar navbar-expand-lg navbar-custom navbar-light bg-light">
+            <a class="navbar-brand" href="{% url 'index' %}">MileStone</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'index' %}">Home<span class="sr-only">(current)</span></a>
+                    </li>
+                    {% if user.is_authenticated %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'add_goal' %}">New Goal</a>
+                    </li>
+                    {% comment %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'check_progress' %}">Check Progress</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'social' %}">Social</a>
+                    </li>
+                    {% endcomment %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'log_out' %}">Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Register</a>
+                    </li>
+
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+
+        {% block body %}
+
+        {% endblock %}
+
+        <!-- Bootstrap Script -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    </body>
+</html>

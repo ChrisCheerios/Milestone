@@ -1,0 +1,97 @@
+{% extends "goals/layout.html" %}
+
+{% block title %} New Goal {% endblock %}
+
+{% block body %}
+
+
+<div class = "container text-center show">
+
+    <header class = "col-12 text-center">
+        <h2>Set a New Goal</h2>
+    </header>
+
+    <div class = "row">
+
+        <div class="col-12 col-md-5 goal-panel">
+            <h3>Milestone</h3>
+            <p>Set a Goal</p>
+            <button type="button" class = "btn btn-primary">Plan Your Journey</button>
+        </div>
+
+        <div class="col-12 col-md-5 goal-panel">
+            <h3>Journey</h3>
+            <p>A journey of a thousand miles begins with a single step . . . That's gonna be a lot of steps.  We'll help you keep you on track</p>
+            <button type="button" class = "btn btn-primary" id="show">Plan Your Journey</button>
+            <p>Perfect for any goal with incrementable progress and regular updates</p>
+            <ul>
+                <li>
+                    <p>Examples:</p>
+                </li>
+                <ul>
+                    <li>Write a novel</li>
+                    <li>Do 1,000 Pushups</li>
+                    <li>Increase your savings account</li>
+                </ul>
+            </ul>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- This is the form for a new 'journey' goal.  Hidden by default   -->
+<div class="container">
+    <form class="hide" method="post" id="new_journey">
+        {% csrf_token %}
+        <h2>A New Journey</h2>
+
+        <div class="form-row">
+            <div class="form-group col">
+                <label for="journey-title">What Will You Call This Goal?</label>
+                <input type="text" id = "journey-title"name='journey-title' class = "form-control" placeholder="Name Your Goal!" required>
+            </div>
+        </div>
+
+        <h4>Quantify Your Target</h4>
+        <div class="form-row">
+            <div class="form-group col">
+                <label for="journey-unit">Unit of Progress</label>
+                <input type="text" class="form-control" id="journey-unit" name='journey-unit' aria-describedby="unitofprogresshelp" placeholder="What do you need to do?" required>
+                <small id="unitofprogresshelp" class="form-text text-muted">Examples: "Pushups" or "Words Written" </small>
+            </div>
+            <div class="form-group col">
+                <label for="journey-quantity">Target Amount</label>
+                <input type="number" id = "journey-quantity" name="journey-quantity" class = "form-control" min="1" max="10000000" placeholder="How many do you need to do?" required>
+                <small class="form-text text-muted" for="journey-quantity">Examples: "30" or "10,000""</small>
+            </div>
+        </div>
+
+        <h4>How Often Will You Update?</h4>
+        <div class="form-row">
+            <div class="form-group col">
+                <label for="journey-chunk-size">This Many</label>
+                <input type="number" id = "journey-chunk-size" name='journey-chunk-size' class = "form-control" min="1" max="10000000" placeholder="How many do you need to do?" required>
+                <small class="form-text text-muted" for="journey-chunk-size">Examples: 1,000 or 30</small>
+            </div>
+            <div class="form-group col">
+                <label for="journey-period">Per This Many Days</label>
+                <input type="text" class="form-control" id="journey-period" name= 'journey-period' aria-describedby="unitofprogresshelp" placeholder="What do you need to do?" required>
+                <small id="journey-periodhelp" class="form-text text-muted">Examples: Pushups or Novels Read </small>
+            </div>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="journey-private" name='journey-private'>
+            <label class="form-check-label" for="journey-private">
+                Check Here to make the Goal Private
+            </label>``
+        </div>
+        <div class="form-row">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="button" class="btn btn-secondary closer">Back</butto`n>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

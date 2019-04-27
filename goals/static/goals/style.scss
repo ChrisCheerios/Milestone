@@ -1,0 +1,56 @@
+$background: #3AAFA9;
+$PrimaryText: #FEFFFF;
+$SecondaryText: #17522A;
+$PrimaryAccent: #DEF2F1;
+$SecondaryAccent: #2B7A78;
+
+
+/* This first cluster is just for setting some basic text and bg colors for the main elements */
+
+html {
+    background-color: $background;
+}
+
+.navbar-custom {
+    background-color: $background !important;
+};
+
+body {
+    background-color: $background;
+}
+
+p {
+    color: $SecondaryText;
+    font-weight: bold;
+}
+
+.goal-panel {
+    background-color: $PrimaryAccent;
+    margin-left: 2rem;
+    margin-right: 2rem;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    padding-bottom: 1rem;
+    border-radius: 2rem;
+}
+
+ul {
+    list-style: none;
+    padding-inline-start: 0px;
+}
+
+.container-flex {
+    width: 80% !important;
+}
+
+label {
+    color: $SecondaryText !important;
+}
+
+.hide {
+    display: none;
+}
+
+.hidden {
+    display: none;
+}

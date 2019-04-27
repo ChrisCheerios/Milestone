@@ -1,0 +1,42 @@
+{% extends "goals/layout.html" %}
+
+{% block title %} Home {% endblock %}
+
+{% block body %}
+<header><h2>Welcome {{ user|lower|capfirst }}</h2></header>
+    <h2>Current Goals</h2>
+<div class = "container-flex">
+
+
+
+    {% if goals %}
+
+    <div class="row">
+
+    {% for goal in goals %}
+
+        <div class="col-sm-6 col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ goal.title }}</h5>
+                    <a href="{% url 'view_goal' goal.id %}" class="btn btn-primary">View Goal</a>
+                </div>
+            </div>
+        </div>
+
+    {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <p>You have no goals!  <a href="{% url 'add_goal' %}">Click Here</a> to make one!</p>
+
+    {% endif %}
+
+
+</div>
+
+
+
+{% endblock %}

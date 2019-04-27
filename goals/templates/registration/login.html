@@ -1,0 +1,32 @@
+{% extends "goals/layout.html" %}
+
+{% block title %} Log In {% endblock %}
+
+{% block body %}
+
+{{ message }}
+
+
+<form method="post">
+    {% csrf_token %}
+    <form class="progress_edit">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group col">
+                <label for="username">Username</label>
+                <input type="text" id = "username" name='username' class="form-control" placeholder="Username" required>
+            </div>
+        </div>
+        <div class="form-row" >
+            <div class="form-group col">
+                <label for="password">Password</label>
+                <input type="password"class="form-control" placeholder="Password" name="password"></input>
+            </div>
+        </div>
+            <div class="form-row">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</form>
+
+{% endblock %}

@@ -1,0 +1,50 @@
+/* This first cluster is just for setting some basic text and bg colors for the main elements */
+html {
+  background-color: #3AAFA9;
+}
+
+.navbar-custom {
+  background-color: #3AAFA9 !important;
+}
+
+body {
+  background-color: #3AAFA9;
+}
+
+p {
+  color: #17522A;
+  font-weight: bold;
+}
+
+.goal-panel {
+  background-color: #DEF2F1;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+  padding-bottom: 1rem;
+  border-radius: 2rem;
+}
+
+ul {
+  list-style: none;
+  padding-inline-start: 0px;
+}
+
+.container-flex {
+  width: 80% !important;
+}
+
+label {
+  color: #17522A !important;
+}
+
+.hide {
+  display: none;
+}
+
+.hidden {
+  display: none;
+}
+
+/*# sourceMappingURL=style.css.map */
