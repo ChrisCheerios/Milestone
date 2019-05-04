@@ -54,6 +54,37 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 
 
+    // Configure my progress-edit buttons to call the progress_update() function
+    // n.b. this is used on multiple pages. 
+    $(".progress_edit").submit(function(e) {
+
+        // Stop the form submission
+        e.preventDefault();
+
+        // Serialize the data from the form for the AJAX requets
+        let data = $(this).serialize()
+
+        // Grab the form-data so that the log can be updated
+        let goal = this.goal_id.value
+        let id = this.progress_id.value
+        let new_date = this.date_edit.value
+        let new_quantity = this.quantity_edit.value
+
+        // Make the ajax requets to the API endpoint for the goal
+        jQuery.ajax({
+            method: "POST",
+            url: `/api/data/${goal}`,
+            data: data
+        })
+        .done(function(msg) {
+            console.log(msg)
+            // This string is specific to the goal_id and progress_id.  Used to
+            // identify which log to update
+            string = "#" + `${goal}` + `_${id}` + "_text"
+            $(`${string}`).text(`Updated: ${new_date}: ${new_quantity}`);
+        });
+
+    });
 
 
 });

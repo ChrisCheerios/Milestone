@@ -81,7 +81,8 @@ def index(request):
     progress = {}
 
     for goal in goals:
-        progress[goal] = list(Goal_Progress.objects.filter(goal = goal).order_by('timestamp').reverse())
+        progress[goal] = list(
+            Goal_Progress.objects.filter(goal = goal).order_by('timestamp').reverse())
 
     # Pass the user and their goals
     context = {
@@ -89,6 +90,7 @@ def index(request):
         "progress": progress,
         "goals": goals
     }
+
     return render(request, "goals/home.html", context)
 
 @login_required
@@ -109,12 +111,15 @@ def add_goal(request):
         total = request.POST["journey-quantity"]
         chunk_size = request.POST["journey-chunk-size"]
         period = request.POST["journey-period"]
+
+        # Mark the privacy status of the goal
         if 'journey-private' in request.POST:
             private = request.POST['journey-private']
         else:
             private = False
 
-        cumulative_goal = Cumulative_Goal(title=title, user=request.user, units=units, total=total, chunk_size=chunk_size, period=period)
+        cumulative_goal = Cumulative_Goal(title=title, user=request.user,
+            units=units, total=total, chunk_size=chunk_size, period=period)
         cumulative_goal.save()
 
         return HttpResponseRedirect(reverse("index"))
@@ -146,7 +151,8 @@ def view_goal (request, id):
     # On Post - We are logging progress that the user has submitted
     else:
 
-        # Grab the data from the form
+        # Grab the data from the form:
+        #pq=progress-quanity, pd=progress-date
         pq_one = request.POST["progress-quantity-1"]
         pd_one = request.POST["progress-date-1"]
 
@@ -163,6 +169,8 @@ def view_goal (request, id):
         # Create Goal_progress instances for each of the recorded progresses
         progress = Goal_Progress(goal=goal, quantity=pq_one, timestamp=pd_one)
         progress.save()
+
+        #If the user submitted multiple progress logs, we update those as well
         if pq_two and pd_two:
             progress = Goal_Progress(goal=goal, quantity=pq_two, timestamp=pd_two)
             progress.save()

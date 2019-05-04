@@ -8,23 +8,28 @@
 
         <!-- Link for favicon-->
         <link rel="shortcut icon" href="{% static 'favicon.ico' %}"/>
+
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-        <!-- My CSS TODO make a stylesheet!-->
+
+        <!-- My stylesheet!-->
         <link rel="stylesheet" type="text/css" href="{% static 'goals/style.css' %}" />
+
         <!-- JQuery source -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
         <!-- My Script -->
         <script src="{% static 'goals/script.js' %}"></script>
-        <!-- Block for each pages script file, if necessary -->
-        <script src="{% static 'goals/goal_view_script.js' %}"></script>
 
         <!-- Chart.js script -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
-        <!-- My Boyfriend Insisted I use a fancy Font -->
+        <!-- My Boyfriend Insisted I use a fancy Font, importing it here -->
         <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
 
+        <!-- My slot for template-specific scripts -->
+        {% block script %}
+        {% endblock %}
 
     </head>
 

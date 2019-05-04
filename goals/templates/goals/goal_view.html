@@ -1,8 +1,20 @@
 {% extends "goals/layout.html" %}
 
+{% load static %}
 {% load humanize %}
 
 {% block title %} {{ goal }} {% endblock %}
+
+
+
+{% block script %}
+<script>
+    var goal_id = "{{goal.id}}";
+    var goal_units = "{{ goal.units|title }}";
+    var goal_total = "{{ goal.total }}"
+</script>
+<script src="{% static 'goals/goal_view.js' %}"></script>
+{% endblock%}
 
 {% block body %}
 
@@ -17,10 +29,10 @@
 
                     {% for log in progress|slice:":5" %}
 
-                        <li>
-                            {{ log.timestamp|date:"F d, Y" }}: {{ log.quantity|intcomma}} {{ log.goal.units }}
-                            <button type="button" class="btn btn-light edit btn-sm">Edit</button>
-                        </li>
+                    <li>
+                        <span id="{{goal.id}}_{{ log.id }}_text">{{ log.timestamp|date:"F d, Y" }}: {{ log.quantity|intcomma}} {{ log.goal.units }}</span>
+                        <button type="button" class="btn btn-light edit btn-sm">Edit</button>
+                    </li>
 
                         <!-- This is the progress-log edit form.  Hidden by default  -->
                         <li class = "hidden">
@@ -38,6 +50,7 @@
                                 </div>
                                     <div class="form-row">
                                     <input class="hidden" name = "progress_id" value = "{{ log.id }}">
+                                    <input class="hidden" name = "goal_id" value = "{{ goal.id }}">
                                     <button type="submit" class="btn btn-light">Submit</button>
                                     <button type="button" class="btn btn-secondary progress-cancel">Cancel</button>
                                 </div>
@@ -62,7 +75,7 @@
                             {% for log in progress|slice:"5:" %}
 
                             <li>
-                                {{ log.timestamp|date:"F d, Y" }}: {{ log.quantity|intcomma}} {{ log.goal.units }}
+                                <span id="{{goal.id}}_{{ log.id }}_text">{{ log.timestamp|date:"F d, Y" }}: {{ log.quantity|intcomma}} {{ log.goal.units }}</span>
                                 <button type="button" class="btn btn-light edit btn-sm">Edit</button>
                             </li>
 
@@ -72,15 +85,16 @@
                                     <div class="form-row progress-block" >
                                         <div class="form-group col">
                                             <label for="progress-quantity">Edit Progress</label>
-                                            <input type="number" id = "quantity-edit" name='quantity-edit' class="form-control" placeholder="{{ log.quantity }}" required>
+                                            <input type="number" id = "quantity_edit" name='quantity_edit' class="form-control" placeholder="{{ log.quantity }}" required>
                                         </div>
                                         <div class="form-group col">
                                             <label for="progress-date">Edit Date</label>
-                                            <input onfocus="(this.type='date')" onblur="(this.type='text')" class="form-control date-progress" placeholder="{{ log.timestamp|date:'m/d/Y' }}" name="date-edit" required>
+                                            <input onfocus="(this.type='date')" onblur="(this.type='text')" class="form-control date-progress" placeholder="{{ log.timestamp|date:'m/d/Y' }}" name="date_edit" required>
                                         </div>
                                     </div>
                                         <div class="form-row">
                                         <input class="hidden" name = "progress_id" value = "{{ log.id }}">
+                                        <input class="hidden" name = "goal_id" value = "{{ goal.id }}">
                                         <button type="submit" class="btn btn-light">Submit</button>
                                         <button type="button" class="btn btn-secondary progress-cancel">Cancel</button>
                                     </div>
@@ -177,125 +191,5 @@
         </div>
     </form>
 </div>
-
-
-<script>
-
-    // Declare my chart.  This needs to be global
-    var chart
-
-    // <!-- The endpoint for the API call to update the chart-->
-    var endpoint = '/api/data/{{goal.id}}'
-
-    // <!-- This is the function that updates the chart with most recent data -->
-    function update_chart() {
-        $.ajax({
-            method: "GET",
-            url: endpoint,
-            success: function(data) {
-                dates = data.dates
-                // Add the date for the final Goal as a label for the last column
-                dates.push( "Final Goal")
-                // The progress values for each log entry
-                progress = data.progress
-                // Add the total target goal for the value of the last column
-                progress.push({{ goal.total }})
-
-                cumulative_progress = data.cumulative_progress
-                chart_update()
-            },
-            error: function(error) {
-                console.log("error")
-                console.log(error)
-            }
-        });
-    };
-
-    // <!-- The function that updates the chart itself, with info from the ajax request above -->
-    function chart_update (){
-
-        // <!-- Destroy the Old Chart, if any -->
-        if(chart){
-            chart.destroy();
-        }
-
-        // <!-- Make a new chart -->
-
-        // <!-- Grab the location for the chart -->
-        let ctx = document.getElementById('myChart').getContext('2d');
-
-        // <!-- Make the chart -->
-        chart = new Chart(ctx, {
-            // The type of chart we want to create
-            type: 'bar',
-
-            // The data for our dataset
-            data: {
-                labels: dates,
-                datasets: [{
-                    label: '{{ goal.units|title }}',
-                    backgroundColor: 'rgb(23,82,42)',
-                    borderColor: 'rgb(23,82,42)',
-                    data: progress
-                },
-                {
-                    label: 'Cumulative Progress',
-                    backgroundColor: 'rgb(222, 242, 241)',
-                    borderColor: 'rgb(222, 242, 241)',
-                    data: cumulative_progress,
-                    type: 'line'
-                }
-                ]
-            },
-
-            // Configuration options go here
-            options: {
-            }
-        });
-    };
-
-    // Configure my progress-edit buttons to submit progress to the server
-    $(".progress_edit").submit(function(e) {
-        // Stop the form submission
-        e.preventDefault();
-
-        let data = $(this).serialize()
-
-        jQuery.ajax({
-            method: "POST",
-            url: '/api/data/{{goal.id}}',
-            data: data
-        })
-        .done(function(msg) {
-            console.log(msg)
-            update_chart()
-        });
-
-    });
-
-    function showlist() {
-        $("#full_list").show()
-        $("#show_button").hide()
-    };
-
-    var button = document.getElementById('show_more')
-    button.addEventListener('click', show_more)
-
-    function show_more() {
-        $('.progress-block').css( "display", "flex" );
-        this.style.display = 'none'
-    }
-
-
-
-    // Updates the Chart when the page loads (it doesn't work when put inside DOMContentLoaded for some reason)
-    update_chart()
-
-
-
-
-
-
-</script>
 
 {% endblock %}

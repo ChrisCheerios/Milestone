@@ -1,13 +1,18 @@
 {% extends "goals/layout.html" %}
 
+{% load static %}
 {% load humanize %}
 
+{% block title %}
+Home
+{% endblock %}
 
-{% block title %} Home {% endblock %}
+{% block script %}
+{% endblock %}
 
 {% block body %}
 
-
+<!-- Contains a layout of the user's active goals -->
 <div class = "container">
     <h2>Current Goals:</h2>
     {% if goals %}
@@ -15,6 +20,8 @@
     <div class="row">
 
     {% for goal in goals %}
+        <!-- Each of these cards contains information on each goal, including recent progress,
+        ability to update recent progress, and an option link to detailed view -->
 
         <div class="col-sm-6 col-md-4">
             <div class="card">
@@ -26,7 +33,8 @@
                     <ul>
 
                         {% for goal_name, logs in progress.items %}
-                            {% if goal_name ==  goal %}
+                            {% if goal_name == goal %}
+
                                 {% for log in logs|slice:":5" %}
 
                                 <li>
@@ -63,8 +71,6 @@
                     <a href="{% url 'view_goal' goal.id %}" class="btn btn-light">View Goal</a>
                 </div>
             </div>
-
-
         </div>
 
     {% endfor %}
@@ -79,37 +85,5 @@
 
 
 </div>
-<script>
-// <!-- Configure my progress-edit buttons to call the progress_update() function -->
-$(".progress_edit").submit(function(e) {
-    // Stop the form submission
-    e.preventDefault();
-
-    // Serialize the data from the form for the AJAX requets
-    let data = $(this).serialize()
-
-    //Grab the data from the from so I can update the information on the page
-    let goal = this.goal_id.value
-    let id = this.progress_id.value
-    let new_date = this.date_edit.value
-    let new_quantity = this.quantity_edit.value
-
-    // Make the ajax requets to the API endpoint for the goal
-    jQuery.ajax({
-        method: "POST",
-        url: `/api/data/${goal}`,
-        data: data
-    })
-    .done(function(msg) {
-        console.log(msg)
-        string = "#" + `${goal}` + `_${id}` + "_text"
-        console.log(string)
-        $(`${string}`).text(`${new_date}: ${new_quantity}`);
-    });
-
-});
-</script>
-
-
 
 {% endblock %}
