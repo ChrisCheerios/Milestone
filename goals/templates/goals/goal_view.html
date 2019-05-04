@@ -6,9 +6,9 @@
 
 {% block body %}
 
-<div class="container-flex">
+<div class="container">
     <div class = row>
-        <div class="col-sm-5">
+        <div class="col-sm-12 col-md-5">
             <div class="jumbotron">
                 <h1 class="display-4">{{ goal|lower|title }}</h1>
                 <h5>Progress:</h5>
@@ -19,24 +19,26 @@
 
                         <li>
                             {{ log.timestamp|date:"F d, Y" }}: {{ log.quantity|intcomma}} {{ log.goal.units }}
-                            <button class="edit">Edit</button>
+                            <button type="button" class="btn btn-light edit btn-sm">Edit</button>
                         </li>
+
+                        <!-- This is the progress-log edit form.  Hidden by default  -->
                         <li class = "hidden">
                             <form class="progress_edit">
                                 {% csrf_token %}
                                 <div class="form-row progress-block" >
                                     <div class="form-group col">
                                         <label for="progress-quantity">Edit Progress</label>
-                                        <input type="number" id = "quantity-edit" name='quantity-edit' class="form-control" placeholder="{{ log.quantity }}" required>
+                                        <input type="number" id = "quantity_edit" name='quantity_edit' class="form-control" placeholder="{{ log.quantity }}" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="progress-date">Edit Date</label>
-                                        <input onfocus="(this.type='date')" onblur="(this.type='text')" class="form-control date-progress" placeholder="{{ log.timestamp|date:'m/d/Y' }}" name="date-edit" required>
+                                        <input onfocus="(this.type='date')" onblur="(this.type='text')" class="form-control date-progress" placeholder="{{ log.timestamp|date:'m/d/Y' }}" name="date_edit" required>
                                     </div>
                                 </div>
                                     <div class="form-row">
                                     <input class="hidden" name = "progress_id" value = "{{ log.id }}">
-                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                    <button type="submit" class="btn btn-light">Submit</button>
                                     <button type="button" class="btn btn-secondary progress-cancel">Cancel</button>
                                 </div>
                             </form>
@@ -61,8 +63,9 @@
 
                             <li>
                                 {{ log.timestamp|date:"F d, Y" }}: {{ log.quantity|intcomma}} {{ log.goal.units }}
-                                <button class="edit">Edit</button>
+                                <button type="button" class="btn btn-light edit btn-sm">Edit</button>
                             </li>
+
                             <li class = "hidden">
                                 <form class="progress_edit">
                                     {% csrf_token %}
@@ -78,7 +81,7 @@
                                     </div>
                                         <div class="form-row">
                                         <input class="hidden" name = "progress_id" value = "{{ log.id }}">
-                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                        <button type="submit" class="btn btn-light">Submit</button>
                                         <button type="button" class="btn btn-secondary progress-cancel">Cancel</button>
                                     </div>
                                 </form>
@@ -91,20 +94,20 @@
                     {% endif %}
 
                 </ul>
-
-
-
             </div>
         </div>
-        <div class="col-sm-7">
+
+        <div class="col-sm-12 col-md-7">
             <canvas id="myChart"></canvas>
         </div>
+
     </div>
 </div>
 
 <!-- The Form for submitting goal progress -->
-<div class="container-flex">
-            <h2>Post Progress:</h2>
+<div class="container">
+
+    <h2>Post Progress:</h2>
     <form method="post" id="progress">
 
         {% csrf_token %}
@@ -150,10 +153,28 @@
 
         <!-- The Form Submit button and the button to reveal the extra-progress sections of the form -->
         <div class="form-row">
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-light">Submit</button>
             <button type="button" class="btn btn-secondary show" id="show_more">Log More Progress</button>
         </div>
 
+    </form>
+
+    <br />
+    <h2>Submit CSV with Progress (beta feature)</h2>
+    <p>This is a beta-feature for bulk-uploading progress from a csv file.
+        The first column must be dates (formatted as "YYYY-MM-DD")
+        and the second column must be the quantity of progress associated
+        with that date. The first row is assumed to be headers and will not be read.
+        Please don't upload any viruses or anything!
+    </p>
+<!-- Form for submitting a csv -->
+    <form action="{% url 'csv' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form }}
+        <input class="hidden" name = "goal" value = "{{ goal.id }}">
+        <div class="form-row">
+            <button type="submit" class="btn btn-light">Submit</button>
+        </div>
     </form>
 </div>
 
@@ -173,9 +194,13 @@
             url: endpoint,
             success: function(data) {
                 dates = data.dates
+                // Add the date for the final Goal as a label for the last column
                 dates.push( "Final Goal")
+                // The progress values for each log entry
                 progress = data.progress
+                // Add the total target goal for the value of the last column
                 progress.push({{ goal.total }})
+
                 cumulative_progress = data.cumulative_progress
                 chart_update()
             },
@@ -215,8 +240,8 @@
                 },
                 {
                     label: 'Cumulative Progress',
-                    backgroundColor: 'rgb(44,159,81)',
-                    borderColor: 'rgb(44,159,81)',
+                    backgroundColor: 'rgb(222, 242, 241)',
+                    borderColor: 'rgb(222, 242, 241)',
                     data: cumulative_progress,
                     type: 'line'
                 }
@@ -229,26 +254,9 @@
         });
     };
 
-    function showlist() {
-        $("#full_list").show()
-        $("#show_button").hide()
-    };
-
-    var button = document.getElementById('show_more')
-    button.addEventListener('click', show_more)
-
-    function show_more() {
-        $('.progress-block').css( "display", "flex" );
-        this.style.display = 'none'
-    }
-
-    // Updates the Chart when the page loads (it doesn't work when put inside DOMContentLoaded for some reason)
-    update_chart()
-
-
-    // <!-- Configure my progress-edit buttons to call the progress_update() function -->
+    // Configure my progress-edit buttons to submit progress to the server
     $(".progress_edit").submit(function(e) {
-        <!-- Stop the form submission -->
+        // Stop the form submission
         e.preventDefault();
 
         let data = $(this).serialize()
@@ -264,6 +272,27 @@
         });
 
     });
+
+    function showlist() {
+        $("#full_list").show()
+        $("#show_button").hide()
+    };
+
+    var button = document.getElementById('show_more')
+    button.addEventListener('click', show_more)
+
+    function show_more() {
+        $('.progress-block').css( "display", "flex" );
+        this.style.display = 'none'
+    }
+
+
+
+    // Updates the Chart when the page loads (it doesn't work when put inside DOMContentLoaded for some reason)
+    update_chart()
+
+
+
 
 
 

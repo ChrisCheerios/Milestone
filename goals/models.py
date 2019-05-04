@@ -33,10 +33,13 @@ class Goal(PolymorphicModel):
     private = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.title} for {self.user}"
+        return f"{self.title}"
 
 # The model for cumulative goals with clear incremental progress - like trying to do 10,000 pushups
 class Cumulative_Goal(Goal):
+
+    # A boolean to mark completion
+    complete = models.BooleanField(default=False)
 
     # Set the goal amount and the unit (ie. 10,00 pushups)
     units = models.CharField(max_length=40)
@@ -48,9 +51,9 @@ class Cumulative_Goal(Goal):
     period = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.title} for {self.user}"
+        return f"{self.title}"
 
-# The model for 'milestone' goals - like running a marathon.
+# The model for '' goals - like running a marathon.
 class Milestone_Goal(Goal):
 
     # A boolean to mark completion

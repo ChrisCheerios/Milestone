@@ -1,14 +1,15 @@
 {% extends "goals/layout.html" %}
 
+{% load humanize %}
+
+
 {% block title %} Home {% endblock %}
 
 {% block body %}
-<header><h2>Welcome {{ user|lower|capfirst }}</h2></header>
-    <h2>Current Goals</h2>
-<div class = "container-flex">
 
 
-
+<div class = "container">
+    <h2>Current Goals:</h2>
     {% if goals %}
 
     <div class="row">
@@ -18,10 +19,52 @@
         <div class="col-sm-6 col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">{{ goal.title }}</h5>
-                    <a href="{% url 'view_goal' goal.id %}" class="btn btn-primary">View Goal</a>
+                    <h3 class="card-title">{{ goal.title }}</h3>
+
+                    <h5>Recent Progress:</h5>
+
+                    <ul>
+
+                        {% for goal_name, logs in progress.items %}
+                            {% if goal_name ==  goal %}
+                                {% for log in logs|slice:":5" %}
+
+                                <li>
+                                    <span id="{{goal.id}}_{{ log.id }}_text">{{ log.timestamp|date:"F d, Y" }}: {{ log.quantity|intcomma}} {{ log.goal.units }}</span>
+                                    <button type="button" class="btn btn-light edit btn-sm">Edit</button>
+                                </li>
+
+                                <!-- This is the progress-log edit form.  Hidden by default  -->
+                                <li class = "hidden">
+                                    <form class="progress_edit">
+                                        {% csrf_token %}
+                                        <div class="form-row progress-block" >
+                                            <div class="form-group col">
+                                                <label for="progress-quantity">Edit Progress</label>
+                                                <input type="number" id = "quantity_edit" name='quantity_edit' class="form-control" placeholder="{{ log.quantity }}" required>
+                                            </div>
+                                            <div class="form-group col">
+                                                <label for="progress-date">Edit Date</label>
+                                                <input onfocus="(this.type='date')" onblur="(this.type='text')" class="form-control date-progress" placeholder="{{ log.timestamp|date:'m/d/Y' }}" name="date_edit" required>
+                                            </div>
+                                        </div>
+                                            <div class="form-row">
+                                            <input class="hidden" name = "progress_id" value = "{{ log.id }}">
+                                            <input class="hidden" name = "goal_id" value = "{{ goal.id }}">
+                                            <button type="submit" class="btn btn-light">Submit</button>
+                                            <button type="button" class="btn btn-secondary progress-cancel">Cancel</button>
+                                        </div>
+                                    </form>
+                                </li>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'view_goal' goal.id %}" class="btn btn-light">View Goal</a>
                 </div>
             </div>
+
+
         </div>
 
     {% endfor %}
@@ -36,6 +79,36 @@
 
 
 </div>
+<script>
+// <!-- Configure my progress-edit buttons to call the progress_update() function -->
+$(".progress_edit").submit(function(e) {
+    // Stop the form submission
+    e.preventDefault();
+
+    // Serialize the data from the form for the AJAX requets
+    let data = $(this).serialize()
+
+    //Grab the data from the from so I can update the information on the page
+    let goal = this.goal_id.value
+    let id = this.progress_id.value
+    let new_date = this.date_edit.value
+    let new_quantity = this.quantity_edit.value
+
+    // Make the ajax requets to the API endpoint for the goal
+    jQuery.ajax({
+        method: "POST",
+        url: `/api/data/${goal}`,
+        data: data
+    })
+    .done(function(msg) {
+        console.log(msg)
+        string = "#" + `${goal}` + `_${id}` + "_text"
+        console.log(string)
+        $(`${string}`).text(`${new_date}: ${new_quantity}`);
+    });
+
+});
+</script>
 
 
 

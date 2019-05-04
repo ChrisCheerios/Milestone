@@ -31,7 +31,7 @@ class GoalParentAdmin(PolymorphicParentModelAdmin):
 class Cumulative_GoalAdmin(GoalChildAdmin):
     base_model = Cumulative_Goal
 
-# The extension for the milestone goal admin model
+# The extension for the  goal admin model
 @admin.register(Milestone_Goal)
 class Milestone_Goal(GoalChildAdmin):
     base_model = Milestone_Goal

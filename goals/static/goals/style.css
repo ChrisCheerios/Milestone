@@ -1,10 +1,41 @@
-/* This first cluster is just for setting some basic text and bg colors for the main elements */
+* {
+  font-family: Monsterrat, sans-serif !important;
+}
+
 html {
   background-color: #3AAFA9;
+  font-family: Monsterrat, sans-serif !important;
 }
 
 .navbar-custom {
   background-color: #3AAFA9 !important;
+  color: white !important;
+}
+
+.navbar-brand {
+  color: white !important;
+  font-weight: bold !important;
+  font-size: 1.75rem !important;
+}
+
+.nav-link {
+  color: white !important;
+  font-weight: bold !important;
+  font-size: 1rem !important;
+}
+
+.jumbotron {
+  background-color: #64b9b2 !important;
+  color: white !important;
+}
+
+.card {
+  background-color: #64b9b2 !important;
+  color: white !important;
+}
+
+.btn-sm {
+  font-size: 0.7rem !important;
 }
 
 body {
@@ -17,7 +48,7 @@ p {
 }
 
 .goal-panel {
-  background-color: #DEF2F1;
+  background-color: #64b9b2;
   margin-left: 2rem;
   margin-right: 2rem;
   margin-bottom: 2rem;
@@ -26,9 +57,37 @@ p {
   border-radius: 2rem;
 }
 
+h1 {
+  color: white !important;
+}
+
+h2 {
+  color: white !important;
+}
+
+h3 {
+  color: white !important;
+}
+
+h4 {
+  color: white !important;
+}
+
+h5 {
+  color: white !important;
+}
+
+h6 {
+  color: white !important;
+}
+
 ul {
   list-style: none;
   padding-inline-start: 0px;
+}
+
+li {
+  margin-bottom: 0.5rem;
 }
 
 .container-flex {
@@ -37,6 +96,12 @@ ul {
 
 label {
   color: #17522A !important;
+}
+
+.btn-light {
+  background-color: #DEF2F1;
+  border-color: #DEF2F1;
+  color: #17522A;
 }
 
 .hide {

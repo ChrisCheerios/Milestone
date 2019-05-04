@@ -13,6 +13,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.http import HttpResponse
 from .models import *
+import csv
+from .forms import UploadFileForm
 
 # Registration View, adapted from https://overiq.com/django-1-10/django-creating-users-using-usercreationform/
 def register(request):
@@ -75,9 +77,16 @@ def index(request):
     # Grab the user's goals
     goals = Goal.objects.filter(user = request.user)
 
+    # Grab any progress associated with the user's goals:
+    progress = {}
+
+    for goal in goals:
+        progress[goal] = list(Goal_Progress.objects.filter(goal = goal).order_by('timestamp').reverse())
+
     # Pass the user and their goals
     context = {
         "user": request.user,
+        "progress": progress,
         "goals": goals
     }
     return render(request, "goals/home.html", context)
@@ -123,9 +132,13 @@ def view_goal (request, id):
         # Grab any progress associated with the goal
         progress = goal.progress.all().order_by('timestamp').reverse()
 
+        # The csv file form:
+        form = UploadFileForm()
+
         context = {
             "goal": goal,
-            "progress": progress
+            "progress": progress,
+            'form': form
         }
 
         return render(request, "goals/goal_view.html", context)
@@ -157,9 +170,6 @@ def view_goal (request, id):
             progress = Goal_Progress(goal=goal, quantity=pq_three, timestamp=pd_three)
             progress.save()
 
-        context = {
-
-        }
         # Return the user to the goal page
         return HttpResponseRedirect(reverse("view_goal", args=[goal.id]))
 
@@ -204,8 +214,8 @@ class goal_progress_data(APIView):
 
         #Retrieve the relevant goal
         goal_progress = Goal_Progress.objects.get(pk=request.data["progress_id"])
-        goal_progress.quantity = request.data["quantity-edit"]
-        goal_progress.timestamp = request.data["date-edit"]
+        goal_progress.quantity = request.data["quantity_edit"]
+        goal_progress.timestamp = request.data["date_edit"]
 
 
         # If the quantity is set to 0- we delete the progresses
@@ -215,3 +225,30 @@ class goal_progress_data(APIView):
             goal_progress.save()
 
         return Response(status=status.HTTP_201_CREATED)
+
+
+def read_csv(request):
+    if request.method != "POST":
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        # fetch the associated goal:
+        goal = Cumulative_Goal.objects.get(pk=request.POST["goal"])
+
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = request.FILES['file'].chunks()
+
+            with open('goals/temp.txt', 'wb+') as destination:
+                for chunk in file:
+                    destination.write(chunk)
+
+            with open('goals/temp.txt') as csvfile:
+                reader = csv.reader(csvfile)
+                next(reader)
+                for date, quantity in reader:
+                    try:
+                        progress = Goal_Progress(quantity = quantity, timestamp=date, goal=goal)
+                        progress.save()
+                    except:
+                        pass
+        return HttpResponseRedirect(reverse('index'))
