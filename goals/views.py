@@ -104,24 +104,29 @@ def add_goal(request):
 
     # On POST we are submitting a new goal and need to update the db.
     else:
+        # Check if it is a journey  goal
+        if request.POST["goal_type"] == "journey":
+            # Grab the data from the form
+            title = request.POST["journey-title"]
+            units = request.POST["journey-unit"]
+            total = request.POST["journey-quantity"]
+            chunk_size = request.POST["journey-chunk-size"]
+            period = request.POST["journey-period"]
 
-        # Grab the data from the form
-        title = request.POST["journey-title"]
-        units = request.POST["journey-unit"]
-        total = request.POST["journey-quantity"]
-        chunk_size = request.POST["journey-chunk-size"]
-        period = request.POST["journey-period"]
+            # Mark the privacy status of the goal
+            if 'journey-private' in request.POST:
+                private = request.POST['journey-private']
+            else:
+                private = False
 
-        # Mark the privacy status of the goal
-        if 'journey-private' in request.POST:
-            private = request.POST['journey-private']
+            cumulative_goal = Cumulative_Goal(title=title, user=request.user,
+                units=units, total=total, chunk_size=chunk_size, period=period)
+            cumulative_goal.save()
+        # If it is a milestone goal, process this way
         else:
-            private = False
+            pass
 
-        cumulative_goal = Cumulative_Goal(title=title, user=request.user,
-            units=units, total=total, chunk_size=chunk_size, period=period)
-        cumulative_goal.save()
-
+        # Route the user home!
         return HttpResponseRedirect(reverse("index"))
 
 

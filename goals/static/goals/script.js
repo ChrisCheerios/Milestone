@@ -13,8 +13,17 @@ Date.prototype.toDateInputValue = (function() {
 document.addEventListener('DOMContentLoaded', () => {
 
     // Configures the Form Display for Adding new Journey Goal
-    $('#show').on('click', function () {
-        $('.hide').show();
+    $('#show_journey_form').on('click', function () {
+        console.log("GOTEM")
+        $('.hide_journey').show();
+        $('.hide-flex').css( "display", "flex" );
+        $('.show').hide();
+    })
+
+    // Configures the Form Display for Adding new Journey Goal
+    $('#show_milestone_form').on('click', function () {
+        console.log("GOTEM")
+        $('.hide_milestone').show();
         $('.hide-flex').css( "display", "flex" );
         $('.show').hide();
     })
@@ -22,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     $('.closer').on('click', function () {
         $('.hide').hide();
         $('.show').show();
-    })
+    });
 
     // Set the default date in the input fields to today
     $('.date').val(new Date().toDateInputValue());
@@ -55,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // Configure my progress-edit buttons to call the progress_update() function
-    // n.b. this is used on multiple pages. 
+    // n.b. this is used on multiple pages.
     $(".progress_edit").submit(function(e) {
 
         // Stop the form submission
