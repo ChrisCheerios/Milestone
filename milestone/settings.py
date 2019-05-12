@@ -19,6 +19,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
+# EMAIL BACKEND FOR TESTING
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '4f_+(-do1*-jw76#-m(3n^ya41om8ips41kbc+f#&vv8v^bdrz'
 

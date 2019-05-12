@@ -43,55 +43,32 @@ class Cumulative_Goal(Goal):
 
     # Set the goal amount and the unit (ie. 10,00 pushups)
     units = models.CharField(max_length=40)
-    total = models.IntegerField()
+    total = models.DecimalField(max_digits=10, decimal_places=2)
 
     # Set the Users preferred pace of completion
     # chunk-size is how many they need to do per period (eg 400 pushups per week)
-    chunk_size = models.IntegerField(default=0)
+    chunk_size = models.DecimalField(max_digits=10, decimal_places=2)
     period = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.title}"
 
-# The model for 'milestone' goals - like running a marathon - for which progress
-# is not discretely quantifiablw.
-class Milestone_Goal(Goal):
-
-    # The final goal
-    final_goal=models.CharField(max_length=150, default="")
-    # A boolean to mark completion
-    complete = models.BooleanField(default=False)
-
-    # Up to 10 intermediary steps, each with a name and a completion boolean
-    step_one = models.CharField(max_length=150, null=True)
-    step_one_complete =  models.BooleanField(default=False)
-
-    step_two = models.CharField(max_length=150, null=True)
-    step_two_complete =  models.BooleanField(default=False)
-
-    step_three = models.CharField(max_length=150, null=True)
-    step_three_complete =  models.BooleanField(default=False)
-
-    step_four = models.CharField(max_length=150, null=True)
-    step_four_complete =  models.BooleanField(default=False)
-
-    step_five = models.CharField(max_length=150, null=True)
-    step_five_complete =  models.BooleanField(default=False)
-
-    step_six = models.CharField(max_length=150, null=True)
-    step_six_complete =  models.BooleanField(default=False)
-
-    step_seven = models.CharField(max_length=150, null=True)
-    step_seven_complete =  models.BooleanField(default=False)
-
-    step_eight = models.CharField(max_length=150, null=True)
-    step_eight_complete =  models.BooleanField(default=False)
-
-    step_nine = models.CharField(max_length=150, null=True)
-    step_nine_complete =  models.BooleanField(default=False)
-
-    step_ten = models.CharField(max_length=150, null=True)
-    step_ten_complete =  models.BooleanField(default=False)
+# # The model for 'milestone' goals - like running a marathon - for which progress
+# # is not discretely quantifiablw.
+# class Milestone_Goal(Goal):
+#
+#     # The final goal
+#     final_goal=models.CharField(max_length=150, default="")
+#     # A boolean to mark completion
+#     complete = models.BooleanField(default=False)
+#
+# class Milestone_Step(models.Model):
+#
+#     # Intermediate steps for milestones each with a name and a completion boolean
+#     goal = models.ForeignKey(Milestone_Goal, on_delete=models.CASCADE, related_name='steps')
+#     step_one = models.CharField(max_length=150, null=True)
+#     step_one_complete =  models.BooleanField(default=False)
+#
 
 # Progress for goals
 class Goal_Progress(models.Model):
@@ -104,7 +81,7 @@ class Goal_Progress(models.Model):
     )
 
     # Quantity of the unit logged
-    quantity = models.IntegerField(default=0)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
 
     # Timestamp
     timestamp = models.DateField()

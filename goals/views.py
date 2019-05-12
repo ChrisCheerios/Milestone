@@ -145,10 +145,16 @@ def view_goal (request, id):
         # The csv file form:
         form = UploadFileForm()
 
+        # Calculate the total progress so far
+        total = 0
+        for log in progress:
+            total += log.quantity
+
         context = {
             "goal": goal,
             "progress": progress,
-            'form': form
+            'form': form,
+            'total': total
         }
 
         return render(request, "goals/goal_view.html", context)
@@ -189,9 +195,6 @@ def view_goal (request, id):
 # My View to retrieve the goal-data for the progress chart
 class goal_progress_data(APIView):
 
-    # authentication_classes = (authentication.TokenAuthentication,)
-    # permission_classes = (permissions.IsAdminUser,)
-
     authentication_classes = []
     permission_classes = []
 
@@ -224,12 +227,10 @@ class goal_progress_data(APIView):
     # On Post we are updating the progress-log data
     def post(self, request, id, format=None):
 
-
         #Retrieve the relevant goal
         goal_progress = Goal_Progress.objects.get(pk=request.data["progress_id"])
         goal_progress.quantity = request.data["quantity_edit"]
         goal_progress.timestamp = request.data["date_edit"]
-
 
         # If the quantity is set to 0- we delete the progresses
         if goal_progress.quantity == "0":
@@ -247,21 +248,33 @@ def read_csv(request):
         # fetch the associated goal:
         goal = Cumulative_Goal.objects.get(pk=request.POST["goal"])
 
+        # fetch the csv form
         form = UploadFileForm(request.POST, request.FILES)
+
         if form.is_valid():
+
+            # Break the csv file into pieces (lines)
             file = request.FILES['file'].chunks()
 
+            # Write the file into a temporary storage
             with open('goals/temp.txt', 'wb+') as destination:
                 for chunk in file:
                     destination.write(chunk)
 
+            # Log the progress
             with open('goals/temp.txt') as csvfile:
                 reader = csv.reader(csvfile)
+
+                #Skip the headers
                 next(reader)
+
+
                 for date, quantity in reader:
                     try:
                         progress = Goal_Progress(quantity = quantity, timestamp=date, goal=goal)
                         progress.save()
                     except:
+                        print(date)
                         pass
+
         return HttpResponseRedirect(reverse('index'))

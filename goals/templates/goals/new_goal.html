@@ -13,27 +13,7 @@
 
     <div class = "row">
 
-        <div class="col-12 col-md-5 goal-panel">
-
-            <h3>Milestone</h3>
-
-            <p>A journey of a thousand miles begins with a single step . . .
-                That's gonna be a lot of steps.  We'll help you keep you on track</p>
-            <button type="button" class = "btn btn-light" id="show_milestone_form">Plan Your Journey</button>
-            <p>Perfect for any goal with incrementable progress and regular updates</p>
-            <ul>
-                <li>
-                    <p>Examples:</p>
-                </li>
-                <ul>
-                    <li>Write a novel</li>
-                    <li>Do 1,000 Pushups</li>
-                    <li>Increase your savings account</li>
-                </ul>
-            </ul>
-        </div>
-
-        <div class="col-12 col-md-5 goal-panel">
+        <div class="col-12 goal-panel">
 
             <h3>Journey</h3>
 
@@ -54,55 +34,6 @@
     </div>
 </div>
 
-<!-- This is the form for a new 'milestone' goal.  Hidden by default   -->
-<div class="container hide hide_milestone">
-    <form method="post" id="new_milestone">
-
-        {% csrf_token %}
-
-        <h2>A New Milestone</h2>
-
-        <div class="form-row">
-            <div class="form-group col">
-                <label for="milestone-title">Name Your Goal:</label>
-                <input type="text" id = "milestone-title" name='milestone-title' class = "form-control" placeholder="Name Your Goal!" required>
-            </div>
-        </div>
-
-        <h4>Break it Down: </h4>
-        <p>Divide The goal into smaller steps!</p>
-
-        <div>
-            {% for x in "0123456789" %}
-            <div class="form-row {% if not forloop.first %}hidden{% endif %} milestone-form-step">
-
-                <div class="form-group col ">
-                    <label for="milestone_step_{{ forloop.counter }}">Step {{ forloop.counter }}:</label>
-                    <input type="text" class="form-control" id="milestone_step_{{ forloop.counter }}" aria-describedby="step_help" placeholder="Describe the Step">
-                    <small id="step_help" class="form-text text-muted">TODO PUT THING HERE?</small>
-                </div>
-                <div class="form-group col">
-                    <label for="milestone_step_date_{{ forloop.counter }}">Goal Date (Optional)</label>
-                    <input type="date" class="form-control date" name="milestone_step_date_{{ forloop.counter }}">
-                </div>
-
-            </div>
-            {% endfor %}
-        </div>
-
-
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="milestone-private" name='milestone-private'>
-            <label class="form-check-label" for="milestone-private">
-                Check Here to make the Goal Private
-            </label>
-        </div>
-        <div class="form-row">
-            <button type="submit" class="btn btn-primary">Submit</button>
-            <button type="button" class="btn btn-secondary closer">Back</button>
-        </div>
-    </form>
-</div>
 
 <!-- This is the form for a new 'journey' goal.  Hidden by default   -->
 <div class="container hide hide_journey">

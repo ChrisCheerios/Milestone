@@ -8,12 +8,15 @@
 
 
 {% block script %}
-<script>
-    var goal_id = "{{goal.id}}";
-    var goal_units = "{{ goal.units|title }}";
-    var goal_total = "{{ goal.total }}"
-</script>
-<script src="{% static 'goals/goal_view.js' %}"></script>
+    <!-- This script block passes django template variables to the javasript file  -->
+    <script>
+        var goal_id = "{{goal.id}}";
+        var goal_units = "{{ goal.units|title }}";
+        var goal_total = "{{ goal.total }}"
+    </script>
+
+    <script src="{% static 'goals/goal_view.js' %}"></script>
+
 {% endblock%}
 
 {% block body %}
@@ -23,6 +26,7 @@
         <div class="col-sm-12 col-md-5">
             <div class="jumbotron">
                 <h1 class="display-4">{{ goal|lower|title }}</h1>
+                <h2>{{total}}/{{goal.total}} {{goal.units}}</h>
                 <h5>Progress:</h5>
 
                 <ul>
@@ -181,7 +185,7 @@
         with that date. The first row is assumed to be headers and will not be read.
         Please don't upload any viruses or anything!
     </p>
-<!-- Form for submitting a csv -->
+    <!-- Form for submitting a csv -->
     <form action="{% url 'csv' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form }}

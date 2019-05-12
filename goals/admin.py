@@ -23,7 +23,8 @@ class GoalChildAdmin(PolymorphicChildModelAdmin):
 @admin.register(Goal)
 class GoalParentAdmin(PolymorphicParentModelAdmin):
     base_model = Goal
-    child_models = (Cumulative_Goal, Milestone_Goal)
+    # child_models = (Cumulative_Goal, Milestone_Goal) Commenting out this line as Milestone Goals are being scrapped from final version
+    child_models = [Cumulative_Goal]
     list_filter = (PolymorphicChildModelFilter,)
 
 # The extension for the cumulative goal admin model
@@ -31,9 +32,9 @@ class GoalParentAdmin(PolymorphicParentModelAdmin):
 class Cumulative_GoalAdmin(GoalChildAdmin):
     base_model = Cumulative_Goal
 
-# The extension for the  goal admin model
-@admin.register(Milestone_Goal)
-class Milestone_Goal(GoalChildAdmin):
-    base_model = Milestone_Goal
+# # The extension for the  goal admin model
+# @admin.register(Milestone_Goal)
+# class Milestone_Goal(GoalChildAdmin):
+#     base_model = Milestone_Goal
 
 admin.site.register(Goal_Progress, Goal_Progress_Admin)

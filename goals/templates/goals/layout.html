@@ -4,6 +4,10 @@
 
 <html>
     <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
         <title>{% block title %}{% endblock %}</title>
 
         <!-- Link for favicon-->
@@ -38,7 +42,7 @@
         <!-- Basic Navbar- taken from bootstrap documentation and modified -->
         <nav class="navbar navbar-expand-lg navbar-custom navbar-light bg-light">
 
-            <a class="navbar-brand" href="{% url 'index' %}">Myle/Stone</a>
+            <a class="navbar-brand" href="{% url 'index' %}">MileStone</a>
 
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -50,34 +54,33 @@
                     <li class="nav-item active">
                         <a class="nav-link" href="{% url 'index' %}">Home<span class="sr-only">(current)</span></a>
                     </li>
+
                     {% if user.is_authenticated %}
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'add_goal' %}">New Goal</a>
-                    </li>
-                    {% comment %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'check_progress' %}">Check Progress</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'social' %}">Social</a>
-                    </li>
-                    {% endcomment %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'log_out' %}">Logout</a>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'register' %}">Register</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'add_goal' %}">New Goal</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'log_out' %}">Logout</a>
+                        </li>
+
+                        {% else %}
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">Register</a>
+                        </li>
 
                     {% endif %}
                 </ul>
             </div>
-            <h2>Welcome {{ user|lower|capfirst }}</h2>
+            {% if user.is_authenticated %}
+
+            <h2>Welcome {{ user|lower|capfirst }}</h2> 
+            {% endif %}
         </nav>
 
         {% block body %}

@@ -96,4 +96,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
+
+
 });
+
+
+    function showlist() {
+        console.log("showlist")
+        $("#full_list").show()
+    }

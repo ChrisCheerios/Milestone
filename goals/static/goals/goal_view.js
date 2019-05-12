@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
             data: {
                 labels: dates,
                 datasets: [{
-                    label: 'goal_units',
+                    label: "Final Goal",
                     backgroundColor: 'rgb(23,82,42)',
                     borderColor: 'rgb(23,82,42)',
                     data: progress
