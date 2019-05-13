@@ -6,46 +6,51 @@
 {% block title %} {{ goal }} {% endblock %}
 
 
-
 {% block script %}
+
     <!-- This script block passes django template variables to the javasript file  -->
     <script>
-        var goal_id = "{{goal.id}}";
-        var goal_units = "{{ goal.units|title }}";
-        var goal_total = "{{ goal.total }}"
+        var goal_id="{{goal.id}}";
+        var goal_units="{{ goal.units|title }}";
+        var goal_total="{{ goal.total }}"
     </script>
-
-    <script src="{% static 'goals/goal_view.js' %}"></script>
 
 {% endblock%}
 
 {% block body %}
 
-<div class="container">
-    <div class = row>
-        <div class="col-sm-12 col-md-5">
+<!-- Primary Container for viewing goal information -->
+<div class="container-flex">
+
+    <div class=row>
+
+        <div class="col-sm-12 col-md-6">
+
             <div class="jumbotron">
+
                 <h1 class="display-4">{{ goal|lower|title }}</h1>
-                <h2>{{total}}/{{goal.total}} {{goal.units}}</h>
+
+                <h2>{{ total|intcomma }}/{{ goal.total|intcomma }} {{ goal.units }}</h2>
+
                 <h5>Progress:</h5>
 
                 <ul>
 
                     {% for log in progress|slice:":5" %}
 
-                    <li>
-                        <span id="{{goal.id}}_{{ log.id }}_text">{{ log.timestamp|date:"F d, Y" }}: {{ log.quantity|intcomma}} {{ log.goal.units }}</span>
-                        <button type="button" class="btn btn-light edit btn-sm">Edit</button>
-                    </li>
+                        <li>
+                            <span id="{{goal.id}}_{{ log.id }}_text">{{ log.timestamp|date:"F d, Y" }}: {{ log.quantity|intcomma}} {{ log.goal.units }}</span>
+                            <button type="button" class="btn btn-light edit btn-sm">Edit</button>
+                        </li>
 
                         <!-- This is the progress-log edit form.  Hidden by default  -->
-                        <li class = "hidden">
+                        <li class="hidden">
                             <form class="progress_edit">
                                 {% csrf_token %}
                                 <div class="form-row progress-block" >
                                     <div class="form-group col">
                                         <label for="progress-quantity">Edit Progress</label>
-                                        <input type="number" id = "quantity_edit" name='quantity_edit' class="form-control" placeholder="{{ log.quantity }}" required>
+                                        <input type="number" name='quantity_edit' class="form-control" placeholder="{{ log.quantity }}" required>
                                     </div>
                                     <div class="form-group col">
                                         <label for="progress-date">Edit Date</label>
@@ -53,8 +58,8 @@
                                     </div>
                                 </div>
                                     <div class="form-row">
-                                    <input class="hidden" name = "progress_id" value = "{{ log.id }}">
-                                    <input class="hidden" name = "goal_id" value = "{{ goal.id }}">
+                                    <input class="hidden" name="progress_id" value="{{ log.id }}">
+                                    <input class="hidden" name="goal_id" value="{{ goal.id }}">
                                     <button type="submit" class="btn btn-light">Submit</button>
                                     <button type="button" class="btn btn-secondary progress-cancel">Cancel</button>
                                 </div>
@@ -70,11 +75,13 @@
                     {% endfor %}
 
                     {% if progress|length > 5 %}
+
                     <li>
                         <button type="button" class="btn btn-secondary" id="show_button" onclick=showlist()>View More</button>
+                        <button type="button" class="btn btn-secondary full_list hidden" id="hide_button" onclick=hidelist()>View Less</button>
                     </li>
 
-                        <ul class="hide" id="full_list">
+                        <ul class="hide full_list">
 
                             {% for log in progress|slice:"5:" %}
 
@@ -83,13 +90,13 @@
                                 <button type="button" class="btn btn-light edit btn-sm">Edit</button>
                             </li>
 
-                            <li class = "hidden">
+                            <li class="hidden">
                                 <form class="progress_edit">
                                     {% csrf_token %}
                                     <div class="form-row progress-block" >
                                         <div class="form-group col">
                                             <label for="progress-quantity">Edit Progress</label>
-                                            <input type="number" id = "quantity_edit" name='quantity_edit' class="form-control" placeholder="{{ log.quantity }}" required>
+                                            <input type="number" name='quantity_edit' class="form-control" placeholder="{{ log.quantity }}" required>
                                         </div>
                                         <div class="form-group col">
                                             <label for="progress-date">Edit Date</label>
@@ -97,8 +104,8 @@
                                         </div>
                                     </div>
                                         <div class="form-row">
-                                        <input class="hidden" name = "progress_id" value = "{{ log.id }}">
-                                        <input class="hidden" name = "goal_id" value = "{{ goal.id }}">
+                                        <input class="hidden" name="progress_id" value="{{ log.id }}">
+                                        <input class="hidden" name="goal_id" value="{{ goal.id }}">
                                         <button type="submit" class="btn btn-light">Submit</button>
                                         <button type="button" class="btn btn-secondary progress-cancel">Cancel</button>
                                     </div>
@@ -115,29 +122,33 @@
             </div>
         </div>
 
-        <div class="col-sm-12 col-md-7">
+        <!-- This is the Div for the chart.  Gets filled in by javascript  -->
+        <div class="col-sm-12 col-md-6">
             <canvas id="myChart"></canvas>
         </div>
 
     </div>
 </div>
 
-<!-- The Form for submitting goal progress -->
-<div class="container">
+<br/>
 
-    <h2>Post Progress:</h2>
+<!-- The Form for submitting goal progress -->
+<div class="container-flex">
+
+    <h2>Add Progress!</h2>
+
     <form method="post" id="progress">
 
         {% csrf_token %}
 
-        <div class = hidden>
-            <input type="text" name="goal" value = "{{ goal.id }}">
+        <div class=hidden>
+            <input type="text" name="goal" value="{{ goal.id }}">
         </div>
 
         <div class="form-row progress-block" >
             <div class="form-group col">
                 <label for="progress-quantity">How Much Progress Are You logging?</label>
-                <input type="number" id = "progress-quantity-1" name='progress-quantity-1' class="form-control" placeholder="{{ goal.units|title }}" required>
+                <input type="number" id="progress-quantity-1" name='progress-quantity-1' class="form-control" placeholder="This Many {{ goal.units|title }}" required>
             </div>
             <div class="form-group col">
                 <label for="progress-date-1">Date</label>
@@ -149,7 +160,7 @@
         <div class="form-row progress-block hide">
             <div class="form-group col">
                 <label for="progress-quantity">More Progress</label>
-                <input type="number" id = "progress-quantity-2" name='progress-quantity-2' class="form-control" placeholder="{{ goal.units|title }}" >
+                <input type="number" id="progress-quantity-2" name='progress-quantity-2' class="form-control" placeholder="This Many {{ goal.units|title }}" >
             </div>
             <div class="form-group col">
                 <label for="progress-date-2">Date</label>
@@ -161,7 +172,7 @@
         <div class="form-row progress-block hide">
             <div class="form-group col">
                 <label for="progress-quantity">Even More Progress!</label>
-                <input type="number" id = "progress-quantity-3" name='progress-quantity-3' class="form-control" placeholder="{{ goal.units|title }}" >
+                <input type="number" id="progress-quantity-3" name='progress-quantity-3' class="form-control" placeholder="This Many {{ goal.units|title }}" >
             </div>
             <div class="form-group col">
                 <label for="progress-date-3">Date</label>
@@ -177,23 +188,28 @@
 
     </form>
 
-    <br />
+    <br/>
+
     <h2>Submit CSV with Progress (beta feature)</h2>
-    <p>This is a beta-feature for bulk-uploading progress from a csv file.
+
+    <p>
+        This is a beta-feature for bulk-uploading progress from a csv file.
         The first column must be dates (formatted as "YYYY-MM-DD")
         and the second column must be the quantity of progress associated
         with that date. The first row is assumed to be headers and will not be read.
         Please don't upload any viruses or anything!
     </p>
+
     <!-- Form for submitting a csv -->
     <form action="{% url 'csv' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form }}
-        <input class="hidden" name = "goal" value = "{{ goal.id }}">
+        <input class="hidden" name="goal" value="{{ goal.id }}">
         <div class="form-row">
             <button type="submit" class="btn btn-light">Submit</button>
         </div>
     </form>
+
 </div>
 
 {% endblock %}

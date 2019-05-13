@@ -16,7 +16,9 @@ from .models import *
 import csv
 from .forms import UploadFileForm
 
-# Registration View, adapted from https://overiq.com/django-1-10/django-creating-users-using-usercreationform/
+
+# Registration View adapted from:
+# https://overiq.com/django-1-10/django-creating-users-using-usercreationform/
 def register(request):
     if request.method == 'POST':
         user = UserCreationForm(request.POST)
@@ -35,10 +37,12 @@ def register(request):
         }
         return render(request, 'registration/register.html', context)
 
+
 # Logout Users and redirect to the login
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse('login'))
+
 
 # Log in Users
 def login_view(request):
@@ -61,12 +65,11 @@ def login_view(request):
 
         user = authenticate(username=username, password=password)
         if user is not None:
-            login(request,user)
+            login(request, user)
             return HttpResponseRedirect(reverse("index"))
         else:
             context = {"message": "Error with Credentials"}
             return render(request, "registration/login.html", context)
-
 
 
 def index(request):
@@ -75,14 +78,14 @@ def index(request):
         return HttpResponseRedirect(reverse("login"))
 
     # Grab the user's goals
-    goals = Goal.objects.filter(user = request.user)
+    goals = Goal.objects.filter(user=request.user)
 
     # Grab any progress associated with the user's goals:
     progress = {}
 
     for goal in goals:
         progress[goal] = list(
-            Goal_Progress.objects.filter(goal = goal).order_by('timestamp').reverse())
+            Goal_Progress.objects.filter(goal=goal).order_by('timestamp').reverse())
 
     # Pass the user and their goals
     context = {
@@ -92,6 +95,7 @@ def index(request):
     }
 
     return render(request, "goals/home.html", context)
+
 
 @login_required
 def add_goal(request):
@@ -120,7 +124,9 @@ def add_goal(request):
                 private = False
 
             cumulative_goal = Cumulative_Goal(title=title, user=request.user,
-                units=units, total=total, chunk_size=chunk_size, period=period)
+                                              units=units, total=total,
+                                              chunk_size=chunk_size,
+                                              period=period)
             cumulative_goal.save()
         # If it is a milestone goal, process this way
         else:
@@ -130,7 +136,7 @@ def add_goal(request):
         return HttpResponseRedirect(reverse("index"))
 
 
-def view_goal (request, id):
+def view_goal(request, id):
     if request.method == "GET":
 
         # Check that the goal exists and belongs to the user:
@@ -163,7 +169,7 @@ def view_goal (request, id):
     else:
 
         # Grab the data from the form:
-        #pq=progress-quanity, pd=progress-date
+        # pq=progress-quanity, pd=progress-date
         pq_one = request.POST["progress-quantity-1"]
         pd_one = request.POST["progress-date-1"]
 
@@ -173,15 +179,15 @@ def view_goal (request, id):
         pq_three = request.POST["progress-quantity-3"]
         pd_three = request.POST["progress-date-3"]
 
-        #Retrieve the goal associated with the progress
+        # Retrieve the goal associated with the progress
         goal_id = request.POST["goal"]
-        goal=Cumulative_Goal.objects.get(pk=goal_id)
+        goal = Cumulative_Goal.objects.get(pk=goal_id)
 
         # Create Goal_progress instances for each of the recorded progresses
         progress = Goal_Progress(goal=goal, quantity=pq_one, timestamp=pd_one)
         progress.save()
 
-        #If the user submitted multiple progress logs, we update those as well
+        # If the user submitted multiple progress logs, we update those as well
         if pq_two and pd_two:
             progress = Goal_Progress(goal=goal, quantity=pq_two, timestamp=pd_two)
             progress.save()
@@ -191,6 +197,7 @@ def view_goal (request, id):
 
         # Return the user to the goal page
         return HttpResponseRedirect(reverse("view_goal", args=[goal.id]))
+
 
 # My View to retrieve the goal-data for the progress chart
 class goal_progress_data(APIView):
@@ -202,23 +209,29 @@ class goal_progress_data(APIView):
     def get(self, request, id, format=None):
 
         # Retrieve the list of progress-updates for the given goal
-        progress = [log.quantity for log in Goal_Progress.objects.filter(goal=id).order_by('timestamp')]
+        logs = Goal_Progress.objects.filter(goal=id).order_by('timestamp')
 
-        # Calculate a list of the cumulative progress at each update, which is also used for the data visualization
+        # Make a list of the quantities of the progress-logs for visualization
+        progress = [log.quantity for log in logs]
+
+        # Calculate a list of the cumulative progress at each update
+        # Mostsly used for the data visualization
         cumulative_progress = []
         for quantity in progress:
             cumulative_progress.append(quantity)
-            if  len(cumulative_progress) >= 2:
-                cumulative_progress[-1] = cumulative_progress[-1] + cumulative_progress[-2]
+            if len(cumulative_progress) >= 2:
+                cumulative_progress[-1] = (cumulative_progress[-1]
+                                           + cumulative_progress[-2])
 
         # List of the Dates for the progress updates
-        dates = [log.timestamp for log in Goal_Progress.objects.filter(goal=id).order_by('timestamp')]
+        progresses = Goal_Progress.objects.filter(goal=id).order_by('timestamp')
+        dates = [log.timestamp for log in progresses]
 
         # Package the data
-        data ={
-            "progress" : progress,
+        data = {
+            "progress": progress,
             "cumulative_progress": cumulative_progress,
-            "dates" : dates
+            "dates": dates
         }
 
         # Return the data
@@ -227,7 +240,7 @@ class goal_progress_data(APIView):
     # On Post we are updating the progress-log data
     def post(self, request, id, format=None):
 
-        #Retrieve the relevant goal
+        # Retrieve the relevant goal
         goal_progress = Goal_Progress.objects.get(pk=request.data["progress_id"])
         goal_progress.quantity = request.data["quantity_edit"]
         goal_progress.timestamp = request.data["date_edit"]
@@ -265,13 +278,13 @@ def read_csv(request):
             with open('goals/temp.txt') as csvfile:
                 reader = csv.reader(csvfile)
 
-                #Skip the headers
+                # Skip the headers
                 next(reader)
-
 
                 for date, quantity in reader:
                     try:
-                        progress = Goal_Progress(quantity = quantity, timestamp=date, goal=goal)
+                        progress = Goal_Progress(quantity=quantity,
+                                                 timestamp=date, goal=goal)
                         progress.save()
                     except:
                         print(date)

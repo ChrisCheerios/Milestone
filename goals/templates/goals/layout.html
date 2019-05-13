@@ -2,95 +2,98 @@
 
 <!DOCTYPE html>
 
-<html>
-    <head>
-        <!-- Required meta tags -->
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html lang="en">
 
-        <title>{% block title %}{% endblock %}</title>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <!-- Link for favicon-->
-        <link rel="shortcut icon" href="{% static 'favicon.ico' %}"/>
+    <title>{% block title %}{% endblock %}</title>
 
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- Link for favicon-->
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}"/>
 
-        <!-- My stylesheet!-->
-        <link rel="stylesheet" type="text/css" href="{% static 'goals/style.css' %}" />
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-        <!-- JQuery source -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- My stylesheet!-->
+    <link rel="stylesheet" type="text/css" href="{% static 'goals/style.css' %}" />
 
-        <!-- My Script -->
-        <script src="{% static 'goals/script.js' %}"></script>
+    <!-- JQuery source -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-        <!-- Chart.js script -->
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <!-- My Script -->
+    <script src="{% static 'goals/script.js' %}"></script>
 
-        <!-- My Boyfriend Insisted I use a fancy Font, importing it here -->
-        <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <!-- Chart.js script -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
-        <!-- My slot for template-specific scripts -->
-        {% block script %}
-        {% endblock %}
+    <!-- My Boyfriend Insisted I use a fancy Font, importing it here -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
 
-    </head>
+    <!-- My slot for template-specific scripts -->
+    {% block script %}
+    {% endblock %}
 
-    <body>
+</head>
 
-        <!-- Basic Navbar- taken from bootstrap documentation and modified -->
-        <nav class="navbar navbar-expand-lg navbar-custom navbar-light bg-light">
+<body>
 
-            <a class="navbar-brand" href="{% url 'index' %}">MileStone</a>
+    <!-- Basic Navbar- taken from bootstrap documentation and modified -->
+    <nav class="navbar navbar-expand-lg navbar-custom navbar-light bg-light">
 
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+        <a class="navbar-brand" href="{% url 'index' %}">MileStone</a>
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-                    <li class="nav-item active">
-                        <a class="nav-link" href="{% url 'index' %}">Home<span class="sr-only">(current)</span></a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'index' %}">Home<span class="sr-only">(current)</span></a>
+                </li>
+
+                {% if user.is_authenticated %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'add_goal' %}">New Goal</a>
                     </li>
 
-                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'log_out' %}">Logout</a>
+                    </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'add_goal' %}">New Goal</a>
-                        </li>
+                    {% else %}
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'log_out' %}">Logout</a>
-                        </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Register</a>
+                    </li>
 
-                        {% else %}
+                {% endif %}
+            </ul>
+        </div>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'register' %}">Register</a>
-                        </li>
+        {% if user.is_authenticated %}
+        <h2>Welcome {{ user|lower|capfirst }}</h2>
+        {% endif %}
 
-                    {% endif %}
-                </ul>
-            </div>
-            {% if user.is_authenticated %}
+    </nav>
 
-            <h2>Welcome {{ user|lower|capfirst }}</h2> 
-            {% endif %}
-        </nav>
+    {% block body %}
 
-        {% block body %}
+    {% endblock %}
 
-        {% endblock %}
+    <!-- Bootstrap Script -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
-        <!-- Bootstrap Script -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
 
-    </body>
 </html>

@@ -26,8 +26,6 @@ html {
     color:white !important;
     font-weight: bold !important;
     font-size: 1.75rem !important;
-
-
 }
 
 .nav-link {
@@ -39,6 +37,10 @@ html {
 .jumbotron {
     background-color: $LightTeal !important;
     color:white !important;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    height: 100%;
+    overflow-y: auto;
 }
 
 .card {
@@ -86,7 +88,8 @@ li {
 }
 
 .container-flex {
-    width: 80% !important;
+    margin-left: 5rem;
+    margin-right: 5rem;
 }
 
 label {

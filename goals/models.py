@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from polymorphic.models import PolymorphicModel
 
+
 class Goal(PolymorphicModel):
 
     # Every goal is associated with a title and a user
@@ -35,7 +36,8 @@ class Goal(PolymorphicModel):
     def __str__(self):
         return f"{self.title}"
 
-# The model for cumulative goals with clear incremental progress - like trying to do 10,000 pushups
+
+# The model for cumulative goals with incremental progress - like doing 10,000 pushups
 class Cumulative_Goal(Goal):
 
     # A boolean to mark completion
@@ -69,6 +71,7 @@ class Cumulative_Goal(Goal):
 #     step_one = models.CharField(max_length=150, null=True)
 #     step_one_complete =  models.BooleanField(default=False)
 #
+
 
 # Progress for goals
 class Goal_Progress(models.Model):
