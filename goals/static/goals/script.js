@@ -106,8 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     var endpoint = `/api/data/${goal_id}`
 
     //  This is the function that updates the chart with most recent data
-    fun
-    ction update_chart() {
+    function update_chart() {
         $.ajax({
             method: "GET",
             url: endpoint,
