@@ -10,7 +10,7 @@
 
     <!-- This script block passes django template variables to the javasript file  -->
     <script>
-        var goal_id="{{goal.id}}";
+        var goal_id="{{ goal.id }}";
         var goal_units="{{ goal.units|title }}";
         var goal_total="{{ goal.total }}"
     </script>
@@ -30,7 +30,7 @@
 
                 <h1 class="display-4">{{ goal|lower|title }}</h1>
 
-                <h2>{{ total|intcomma }}/{{ goal.total|intcomma }} {{ goal.units }}</h2>
+                <h2>{{ total|intcomma }}/{{ goal.total|intcomma }} {{ goal.units    }}</h2>
 
                 <h5>Progress:</h5>
 

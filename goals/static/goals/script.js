@@ -102,11 +102,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Declare my chart.  This needs to be global
     var chart
 
-    // <!-- The endpoint for the API call to update the chart-->
+    //  The endpoint for the API call to update the chart
     var endpoint = `/api/data/${goal_id}`
 
-    // <!-- This is the function that updates the chart with most recent data -->
-    function update_chart() {
+    //  This is the function that updates the chart with most recent data
+    fun
+    ction update_chart() {
         $.ajax({
             method: "GET",
             url: endpoint,
@@ -130,20 +131,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // <!-- The function that updates the chart itself, with info from the ajax request above -->
+    // The function that updates the chart itself, with info from the ajax request above
     function chart_update (){
 
-        // <!-- Destroy the Old Chart, if any -->
+        //  Destroy the Old Chart, if any
         if(chart){
             chart.destroy();
         }
 
-        // <!-- Make a new chart -->
+        //  Make a new chart
 
-        // <!-- Grab the location for the chart -->
+        //  Grab the location for the chart
         let ctx = document.getElementById('myChart').getContext('2d');
 
-        // <!-- Make the chart -->
+        //  Make the chart
         chart = new Chart(ctx, {
             // The type of chart we want to create
             type: 'bar',
@@ -173,8 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-
-
     function showlist() {
         $("#full_list").show()
         $("#show_button").hide()
@@ -191,10 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Updates the Chart when the page loads
     update_chart()
 
-
 });
-
-
 
 // Configures the buttons to hide and show the full list of progress logs
 function showlist() {

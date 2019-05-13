@@ -10,7 +10,7 @@
 ## Recommended Steps for Testing the App:
 * Register.
 * Make a New Goal - name it anything, but set a target quantity of ~10,000.
-* Navigate to the goal's page, and then upload the test-csv file I've provided (example_progress_log.txt) to populate the goal with some data.
+* Navigate to the goal's page, and then upload the test-csv file I've provided (example_progress_log.txt) to quickly populate the goal with some sample data.
 
 ## Key Files/Directories
 
@@ -24,23 +24,35 @@ This is the landing page, mainly just displays your active goals.  Note that eac
  * The Progress-Entry Form:  This is the default form for adding progress to the goal.  Added option to submit up to three updates at once, because my beta-tester (aka me) found that useful
  * The CSV form submission to bulk-uploading.  This was not a planned feature, but I wanted to upload my google spreadsheet goal data onto this - so I wrote this option in!
 
+#### views.py
+ * The other workhorse file.  Contains the view logic for all the usual suspects: login/logout/register, a homepage, the goal-view page, etc.  
+ * I used the djanga REST framework to handle the API endpoint for editing progress-log data and for requesting the progress logs for a given goal.  
+
+
+
 #### templates/goals/new_goal.html
 Page for making a new goal.  I made some of my first forays into JQuery working on this page, which I found useful working on the rest of the project.  This page is a little barebones since I removed the second type of goal, but it's snappy and responsive, so I kind of like it.  
 
 #### templates/goals/layout.html
-
 My django layout page for the main section of the site.  Nothing very fancy.  A little bit of logic to customize display based on who, if anyone, is logged in.  A navbar adapted from bootstrap.  Also links to the script sheets for chart.js.  And my boyfriend ~~demanded~~ **suggested** I use a fancy custom font for the site, so that is imported here!
 
-#### Models.py
+#### goals/templates/registration
+This directory contains the templates for the login/register views
 
+#### goals/static/goals/
+Contains both my js file and my style sheet.  
+ * script.js: My javascript file.  I started tinkering with JQuery on this project, in part so I could more easily use AJAX with DJANGO's rest framework.  Most of the resources discussing that assumed some familiarity with JQuery.  
+ * style.css:  I used a bit of SASS for the stylesheet - mostly for arranging my color scheme.  And for a cool trick I found online for styling with all the h1-h6 tags at once.  I hated sass in week 1 - but it's really grown on me!  This is the first project where I'm actually pleased with what the final product looks like.  Crisp - lightweight - modern.  Shoutouts to my boyfriend for helping choose color shades!
+
+
+
+#### Models.py
 * I used the PolymorphicModel package for django so that I could have different classes of the base goal model and still be able to iterate over all the different types at once.  Since removing the Milestone goal types, the PolymorphicModel system is a little redundant, but I've left it in so that I can continue to tinker.
 
 #### admin.py
-
 * The admin page looks a little different because of how Polymorphic models need to be registered. The result is pretty familiar.  The ability to filter goals and goal progress at the default admin page is extremely useful
 
-#### exampe_progress_log.txt
-
+#### example_progress_log.txt
 * A csv of a sample progress log that I used for testing the csv-upload feature.  Included in case you'd like to test the same.  Note that the log includes 8300 repetitions, so I recommend testing it with a goal that requires about 10,000 repetitions.  
 
 
